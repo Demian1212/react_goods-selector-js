@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
 import './App.scss';
-
-const goodsFromServer = [
+import 'bulma/css/bulma.css';
+import { useState } from 'react';
+import classNames from 'classnames';
+export const goods = [
   'Dumplings',
   'Carrot',
   'Eggs',
@@ -13,72 +14,60 @@ const goodsFromServer = [
   'Jam',
   'Garlic',
 ];
-
 export const App = () => {
-  const [selectedGood, setSelectedGood] = useState('Jam');
-
+  const [value, setValue] = useState(goods[8]);
+  const reset = () => setValue('');
   return (
-    <div className="section">
-      <div className="container">
-        {/* Заголовок */}
-        <h1 className="title">
-          {selectedGood ? `${selectedGood} is selected` : 'No goods selected'}
-          {selectedGood && (
-            <button
-              type="button"
-              data-cy="ClearButton"
-              className="button is-small is-danger ml-3"
-              onClick={() => setSelectedGood('')}
+    <main className="section container">
+      <h1 className="title is-flex is-align-items-center">
+        {value
+          ? `${value} is selected`
+          : 'No goods selected'}
+        {value && (
+          <button
+            data-cy="ClearButton"
+            type="button"
+            className="delete ml-3"
+            onClick={reset}
+          />
+        )}
+      </h1>
+      <table className="table">
+        <tbody>
+          {goods.map(good => (
+            <tr
+              key={good}
+              data-cy="Good"
+              className={classNames(
+                { 'has-background-success-light': good === value },
+              )}
             >
-              Clear
-            </button>
-          )}
-        </h1>
-
-        {/* Таблиця товарів */}
-        <table className="table is-fullwidth">
-          <tbody>
-            {goodsFromServer.map(good => {
-              const isSelected = selectedGood === good;
-
-              return (
-                <tr
-                  key={good}
-                  data-cy="Good"
-                  className={isSelected ? 'has-background-success-light' : ''}
+              <td>
+                <button
+                  data-cy={good === value ? 'RemoveButton' : 'AddButton'}
+                  type="button"
+                  className={classNames(
+                    'button',
+                    { 'is-info': good === value },
+                  )}
+                  onClick={() => {
+                    if (good === value) {
+                      reset();
+                      return;
+                    }
+                    setValue(good);
+                  }}
                 >
-                  <td data-cy="GoodTitle" className="is-vcentered">
-                    {good}
-                  </td>
-                  <td className="is-vcentered">
-                    {!isSelected ? (
-                      <button
-                        type="button"
-                        data-cy="AddButton"
-                        className="button"
-                        onClick={() => setSelectedGood(good)}
-                      >
-                        +
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        data-cy="RemoveButton"
-                        className="button is-info"
-                        onClick={() => setSelectedGood('')}
-                      >
-                        -
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </div>
+                  {good === value ? '-' : '+'}
+                </button>
+              </td>
+              <td data-cy="GoodTitle" className="is-vcentered">
+                {good}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </main>
   );
 };
-
-export default App;
